@@ -1,2 +1,4 @@
 preprocessed_datasets/
 __pycache__/
+musics/
+*.mid

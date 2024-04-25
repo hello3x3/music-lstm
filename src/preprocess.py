@@ -11,6 +11,7 @@ with open("../config.json", "r", encoding="utf-8") as f:
 
 DATASET_PATH = os.path.abspath(os.path.join("../", cfg["DATASET_PATH"]))
 SAVE_DIR = os.path.join(os.path.abspath(os.path.join("../", cfg["SAVE_DIR"])), DATASET_PATH.split("/")[-1])
+MUSIC_DIR = os.path.join(os.path.abspath(os.path.join("../", cfg["MUSIC_DIR"])), "%s")
 SEQUENCE_LENGTH = cfg["SEQUENCE_LENGTH"]
 PREPROCESS_DATASET_DIR = os.path.join(SAVE_DIR, "temp")
 MAP_PATH = os.path.join(SAVE_DIR, "music_map.json")

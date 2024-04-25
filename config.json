@@ -1,5 +1,6 @@
 {
     "DATASET_PATH": "./datasets/europa/deutschl/erk",
     "SAVE_DIR": "./preprocessed_datasets",
+    "MUSIC_DIR": "./musics",
     "SEQUENCE_LENGTH": 64
 }
