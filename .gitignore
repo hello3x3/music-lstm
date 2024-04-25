@@ -2,3 +2,5 @@ preprocessed_datasets/
 __pycache__/
 musics/
 *.mid
+*.h5
+ckpt/

@@ -10,8 +10,10 @@ with open("../config.json", "r", encoding="utf-8") as f:
     cfg: dict = json.load(f)
 
 DATASET_PATH = os.path.abspath(os.path.join("../", cfg["DATASET_PATH"]))
-SAVE_DIR = os.path.join(os.path.abspath(os.path.join("../", cfg["SAVE_DIR"])), DATASET_PATH.split("/")[-1])
+SAVE_DIR = os.path.join(os.path.abspath(os.path.join("../", cfg["SAVE_DIR"])), DATASET_PATH.split("datasets/")[-1])
 MUSIC_DIR = os.path.join(os.path.abspath(os.path.join("../", cfg["MUSIC_DIR"])), "%s")
+CKPT_DIR = os.path.join(os.path.abspath(os.path.join("../", cfg["CKPT_DIR"])), DATASET_PATH.split("datasets/")[-1])
+SAVE_MODEL_PATH = os.path.join(CKPT_DIR, "music-lstm.h5")
 SEQUENCE_LENGTH = cfg["SEQUENCE_LENGTH"]
 PREPROCESS_DATASET_DIR = os.path.join(SAVE_DIR, "temp")
 MAP_PATH = os.path.join(SAVE_DIR, "music_map.json")
@@ -89,16 +91,16 @@ def encode(music, time_step=0.25):
     for event in music.flat.notesAndRests:
         # handle notes
         if isinstance(event, m21.note.Note):
-            symbol = event.pitch.midi
+            token = event.pitch.midi
         # handle rests
         elif isinstance(event, m21.note.Rest):
-            symbol = "r"
+            token = "r"
 
         # convert the note/rest into time series notation
         steps = int(event.duration.quarterLength / time_step)
         for step in range(steps):
             if step == 0:
-                encoded_music.append(symbol)
+                encoded_music.append(token)
             else:
                 encoded_music.append("_")
 
@@ -171,8 +173,8 @@ def create_map(musics, map_path):
     vocab = list(set(musics))
 
     # create mappings
-    for idx, symbol in enumerate(vocab):
-        music_map[symbol] = idx
+    for idx, token in enumerate(vocab):
+        music_map[token] = idx
 
     # save voabulary to a json file
     with open(map_path, "w") as f:
@@ -190,12 +192,13 @@ def convert_musics_to_int(musics):
     musics = musics.split()
 
     # map songs to int
-    for symbol in musics:
-        int_musics.append(music_map[symbol])
+    for token in musics:
+        int_musics.append(music_map[token])
 
     return int_musics
 
-def one_hot_encode(inputs, num_class=None):
+
+def one_hot_encode(inputs, num_classes=None):
     inputs = np.array(inputs)
     inputs_shape = inputs.shape
 
@@ -204,14 +207,14 @@ def one_hot_encode(inputs, num_class=None):
     
     inputs = inputs.ravel()
     
-    if not num_class:
-        num_class = np.max(inputs) + 1
+    if not num_classes:
+        num_classes = np.max(inputs) + 1
     n = inputs.shape[0]
 
-    ctg = np.zeros((n, num_class), dtype="float32")
+    ctg = np.zeros((n, num_classes), dtype="float32")
     ctg[np.arange(n), inputs] = 1
 
-    output_shape = inputs_shape + (num_class, )
+    output_shape = inputs_shape + (num_classes, )
     ctg = np.reshape(ctg, output_shape)
     return ctg
 
@@ -237,7 +240,7 @@ def generate_training_sequences(sequence_length):
     # one-hot encode the sequences
     vocab_size = len(set(int_musics))
     # inputs size: (# of sequences, sequence length, vocabulary size)
-    inputs = one_hot_encode(inputs, num_class=vocab_size)
+    inputs = one_hot_encode(inputs, num_classes=vocab_size)
     targets = np.array(targets)
 
     print(f"There are {len(inputs)} sequences.")

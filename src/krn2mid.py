@@ -22,25 +22,25 @@ def krn2mid(music_path: str, step_duration=0.25):
 
     stream = m21.stream.Stream()
 
-    start_symbol = None
+    start_token = None
     step_counter = 1
 
-    for idx, symbol in enumerate(music):
+    for idx, token in enumerate(music):
         # handle case in which we have a note/rest
-        if symbol != "_" or idx + 1 == len(music):
+        if token != "_" or idx + 1 == len(music):
             # ensure we're dealing with note/rest beyond the first one
-            if start_symbol is not None:
+            if start_token is not None:
                 quarter_length_duration = step_duration * step_counter # 0.25 * 4 = 1
                 # handle rest
-                if start_symbol == "r":
+                if start_token == "r":
                     m21_event = m21.note.Rest(quarterLength=quarter_length_duration)
                 # handle note
                 else:
-                    m21_event = m21.note.Note(int(start_symbol), quarterLength=quarter_length_duration)
+                    m21_event = m21.note.Note(int(start_token), quarterLength=quarter_length_duration)
                 stream.append(m21_event)
                 # reset the step counter
                 step_counter = 1
-            start_symbol = symbol
+            start_token = token
 
         # handle case in which we have a prolongation sign "_"
         else:
