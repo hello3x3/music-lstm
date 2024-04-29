@@ -1,12 +1,11 @@
 import os
 import json
 import gradio as gr
-from preprocess import DATASET_PATH, MUSIC_DIR, SAVE_DIR
 
 
-WAV_DIR = os.path.join(MUSIC_DIR % "wav", DATASET_PATH.split("datasets/")[-1])
+WAV_DIR = r"path/to/wav_dir" # todo 这里改成你本地存放wav的目录
 EMO_DICT = dict()
-EMO_DIR = os.path.join(SAVE_DIR, "emotion.json")
+EMO_DIR = os.path.join(WAV_DIR, "emotion.json")
 EMO_MAP = {
     "喜悦": "happy",
     "愤怒": "angry",

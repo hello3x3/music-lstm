@@ -13,7 +13,7 @@ def krn2mid(music_path: str, step_duration=0.25):
     if not acceptable_durations(music, DURATIONS):
         # print(f"{music_path} is not acceptable")
         return
-    
+
     music = transpose(music)
     music = encode(music)
     music = music.split()

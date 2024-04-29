@@ -52,6 +52,8 @@ python src/krn2mid.py
 python src/label.py
 ```
 
+windows下可以参考`src/label_for_win.py`，注意，需要改该文件中的`WAV_DIR`.
+
 ### Train
 
 本项目依赖`tensorflow-gpu==2.7.0`和`protobuf==3.19.0`，训练时大约占用显存40GB
@@ -97,5 +99,5 @@ docker run -it -v /data/shujiuhe/music-lstm/musics:/root/musics music-lstm:v0.1
 `mid2wavs`：将一个目录下的所有midi转为wav；
 
 ```bash
-python /root/mid2wav.py
+python3 /root/mid2wav.py
 ```
