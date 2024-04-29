@@ -2,5 +2,8 @@ preprocessed_datasets/
 __pycache__/
 musics/
 *.mid
+*wav
 *.h5
 ckpt/
+*.sf2
+*.tar

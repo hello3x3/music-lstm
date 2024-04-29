@@ -1,5 +1,6 @@
 import os
 import music21 as m21
+from tqdm import tqdm
 from preprocess import MUSIC_DIR, DATASET_PATH, DURATIONS, acceptable_durations, transpose, encode
 
 
@@ -7,13 +8,10 @@ def krn2mid(music_path: str, step_duration=0.25):
     """
     指定一首歌krn转为midi
     """
-    if music_path[-3:] != "krn":
-        raise FileExistsError(f"{music_path} is not a 'krn' file.")
-    
     music = m21.converter.parse(music_path)
 
     if not acceptable_durations(music, DURATIONS):
-        print(f"{music_path} is not acceptable")
+        # print(f"{music_path} is not acceptable")
         return
     
     music = transpose(music)
@@ -47,22 +45,29 @@ def krn2mid(music_path: str, step_duration=0.25):
             step_counter += 1
 
     # write the m21 stream to a midi file
-    save_dir = os.path.dirname(os.path.join(MUSIC_DIR % music_path.split("datasets/")[-1]))
+    save_dir = os.path.dirname(os.path.join(MUSIC_DIR % os.path.join("mid/", music_path.split("datasets/")[-1])))
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     save_dir = os.path.join(save_dir, music_path.split("/")[-1].replace(".krn", ".mid"))
     stream.write("midi", save_dir)
 
 
-def krn2mids(musics_path):
+def krn2mids(musics_path: str):
     """
     将一个目录下的所有krn转为midi
     """
-    for path, subdirs, files in os.walk(musics_path):
-        for file in files:
-            if file[-3:] == "krn":
-                music_path = os.path.join(path, file)
-                krn2mid(music_path)
+    def walkdir(folder):
+        for path, subdirs, files in os.walk(folder):
+            for file in files:
+                yield os.path.abspath(os.path.join(path, file))
+
+    cnt = 0
+    for _ in walkdir(musics_path):
+        cnt += 1
+    
+    for music_path in tqdm(walkdir(musics_path), total=cnt):
+        if music_path[-3:] == "krn":
+            krn2mid(music_path)
 
 
 if __name__ == "__main__":
