@@ -42,6 +42,16 @@ python src/preprocess.py
 python src/krn2mid.py
 ```
 
+4. 对音乐进行情感标注：
+
+注意：前提必须是已经得到wav格式的音乐，目录为`musics/wav/...`，标注完保存的json文件在同级目录中的`emotion.json`。
+
+默认网页端口为51234
+
+```bash
+python src/label.py
+```
+
 ### Train
 
 本项目依赖`tensorflow-gpu==2.7.0`和`protobuf==3.19.0`，训练时大约占用显存40GB
