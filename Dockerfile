@@ -17,6 +17,8 @@ COPY --chown=root:root ./datasets/musicfonts/Arachno.sf2 /root/Arachno.sf2
 COPY --chown=root:root ./src/mid2wav.py /root/mid2wav.py
 
 RUN sed -i 's@http://archive.ubuntu.com/ubuntu/@http://mirrors.aliyun.com/ubuntu/@g' /etc/apt/sources.list && \
+    sed -i 's@http://security.ubuntu.com/ubuntu/@http://mirrors.aliyun.com/ubuntu/@g' /etc/apt/sources.list && \
+    apt-get clean && \
     apt-get update && \
     apt-get upgrade -y && \
     apt-get install fluidsynth -y
