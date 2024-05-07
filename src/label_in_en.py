@@ -2,18 +2,17 @@ import os
 import json
 import gradio as gr
 from datetime import datetime
-from preprocess import DATASET_PATH, MUSIC_DIR, SAVE_DIR
 
 
-WAV_DIR = os.path.join(MUSIC_DIR % "wav", DATASET_PATH.split("datasets/")[-1])
+WAV_DIR = "path/to/wav_dir" # TODO: Change this to your local wav directory
 EMO_DICT = dict()
-EMO_DIR = os.path.join(SAVE_DIR, "emotion.json")
-LOG_DIR = os.path.join(SAVE_DIR, "label.log")
+EMO_DIR = os.path.join(WAV_DIR, "emotion.json")
+LOG_DIR = os.path.join(WAV_DIR, "label.log")
 EMO_MAP = {
-    "喜悦": "happy",
-    "愤怒": "angry",
-    "厌恶": "dislike",
-    "低落": "depressed"
+    "happy": "happy",
+    "angry": "angry",
+    "dislike": "dislike",
+    "depressed": "depressed"
 }
 
 
@@ -32,7 +31,7 @@ for file in walkdir(WAV_DIR):
 def get_next_path(path):
     index = MUSIC_PATH.index(path) + 1
     if index >= len(MUSIC_PATH):
-        return "所有标注任务已经完成", MUSIC_PATH[0]
+        return "All tasks have been completed!", MUSIC_PATH[0]
     return MUSIC_PATH[index], MUSIC_PATH[index]
 
 
@@ -51,13 +50,13 @@ def label_music(path: str, emo: str):
 
 with gr.Blocks() as demo:
     with gr.Row():
-        path = gr.Textbox(value=MUSIC_PATH[0], scale=3, label="音乐地址")
+        path = gr.Textbox(value=MUSIC_PATH[0], scale=3, label="music address")
         refresh = gr.Button("Refresh", scale=1)
     music = gr.Audio(value=MUSIC_PATH[0])
     refresh.click(fn=get_next_path, inputs=path, outputs=[path, music])
 
-    label = gr.Radio(choices=list(EMO_MAP.keys()), label="音乐情感")
-    remind = gr.Textbox(value="请开始标注情感")
+    label = gr.Radio(choices=list(EMO_MAP.keys()), label="music emotion")
+    remind = gr.Textbox(value="Please start labeling emotions")
 
     submit = gr.Button("Submit")
     submit.click(fn=label_music, inputs=[path, label], outputs=[remind])

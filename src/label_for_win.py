@@ -1,11 +1,13 @@
 import os
 import json
 import gradio as gr
+from datetime import datetime
 
 
 WAV_DIR = r"path/to/wav_dir" # todo 这里改成你本地存放wav的目录
 EMO_DICT = dict()
 EMO_DIR = os.path.join(WAV_DIR, "emotion.json")
+LOG_DIR = os.path.join(WAV_DIR, "label.log")
 EMO_MAP = {
     "喜悦": "happy",
     "愤怒": "angry",
@@ -37,8 +39,13 @@ def label_music(path: str, emo: str):
     EMO_DICT[path] = EMO_MAP[emo]
     with open(EMO_DIR, "w", encoding="utf-8") as f:
         json.dump(EMO_DICT, f, indent=4)
-    return f"标注成功！\t\"{path.split('/')[-1]}\"\t的情感是：{emo}"
-
+    time = datetime.now().strftime("%H:%M:%S")
+    msg = f"The labeling was successful! \t\"{path.split('/')[-1]}\"\t is {emo}"
+    print("\033[92m" + "[ OK ]" + "\033[0m\t" + msg)
+    log = f"{time}\t{msg}"
+    with open(LOG_DIR, "a", encoding="utf-8") as f:
+        f.write(log + "\n")
+    return log
 
 with gr.Blocks() as demo:
     with gr.Row():
@@ -55,4 +62,4 @@ with gr.Blocks() as demo:
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="127.0.0.1", server_port=51234)
+    demo.launch(server_name="0.0.0.0", server_port=51234)
