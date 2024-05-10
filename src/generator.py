@@ -1,5 +1,7 @@
 import os
 import json
+import random
+import argparse
 import numpy as np
 import music21 as m21
 import tensorflow.keras as keras
@@ -7,9 +9,24 @@ from preprocess import SAVE_MODEL_PATH, SEQUENCE_LENGTH, MAP_PATH, MUSIC_DIR, on
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
+SEEDS = [
+    "67 _ 67 _ 67 _ _ 65 64 _ 64 _ 64 _ _",
+    "67 _ _ _ _ _ 65 _ 64 _ 62 _ 60 _ _ _"
+]
+
+parser = argparse.ArgumentParser(description="Generator Music from Emotions.")
+parser.add_argument("-m", "--model_path", type=str, default=SAVE_MODEL_PATH, help="Directory for the model.")
+parser.add_argument("-s", "--seed", type=str, default=random.choice(SEEDS), help="Random seed for the music.")
+parser.add_argument("-t", "--temperature", type=float, default=0.3, help="Mode temperature.")
+args = parser.parse_args()
+
+model_path = args.model_path
+seed = args.seed
+temperature = args.temperature
+
 
 class Generator:
-    def __init__(self, model_path=SAVE_MODEL_PATH):
+    def __init__(self, model_path):
         self.model_path = model_path
         self.model = keras.models.load_model(model_path)
 
@@ -103,9 +120,7 @@ class Generator:
 
 
 if __name__ == "__main__":
-    generator = Generator()
-    seed1 = "67 _ 67 _ 67 _ _ 65 64 _ 64 _ 64 _ _"
-    seed2 = "67 _ _ _ _ _ 65 _ 64 _ 62 _ 60 _ _ _"
-    music = generator.generate_music(seed1, 500, SEQUENCE_LENGTH, 0.3)
+    generator = Generator(model_path=model_path)
+    music = generator.generate_music(seed, 500, SEQUENCE_LENGTH, temperature)
     generator.save_music(music)
     print("The magic has happened.")

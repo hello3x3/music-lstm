@@ -68,8 +68,21 @@ python src/train.py
 
 程序调用预训练好的模型权重文件，根据特定的种子序列生成音乐，保存在`MUSIC_DIR`下。
 
+程序支持的参数有：
+
 ```bash
-python src/generator.py
+-m MODEL_PATH, --model_path MODEL_PATH
+                        Directory for the model.
+-s SEED, --seed SEED  
+                        Random seed for the music.
+-t TEMPERATURE, --temperature TEMPERATURE
+                        Temperture for the model.
+```
+
+注：一般情况下，可使用默认值作为程序参数
+
+```bash
+python src/generator.py -m "/path/to/model.h5" -t 0.3
 ```
 
 ### Other
@@ -101,3 +114,45 @@ docker run -it -v /data/shujiuhe/music-lstm/musics:/root/musics music-lstm:v0.1
 ```bash
 python3 /root/mid2wav.py
 ```
+
+## Tree
+
+```bash
+- ckpt/                     // 预训练模型存储路径
+    - happy/
+        music-lstm.h5
+    - angry/
+        music-lstm.h5
+    - dislike/
+        music-lstm.h5
+    - depressed/
+        music-lstm.h5
+- datasets/
+    - europa/               // 原始krn数据存储路径
+    - musicfonts/           // midi音乐转wav音乐需要的音色文件存储路径
+        - Arachno.sf2       // 钢琴音色数据
+- musics/
+    - generator             // 程序生成的音乐
+    - mid/                  // 从krn音乐预处理成midi音乐的存储文件夹
+    - wav/                  // 从midi音乐预处理成wav音乐的存储文件夹
+- preprocessed_datasets/    // 数据集预处理的存储路径
+    .../
+        - temp/             // 中间文件存储目录
+        - emotion.json      // 音乐情感标注文件
+        - music_map.json    // 从音符到整数的映射字典
+        - musics_seq.txt    // 预处理完毕的音乐序列
+- src/
+    - generator.py          // 从情感生成音乐的程序
+    - krn2mid.py            // 从krn音乐预处理成midi音乐的程序
+    - label_for_win.py      // 适用于windows下的音乐情感标注程序
+    - label_in_en.py        // 最简版适用于linux的音乐情感标注程序
+    - label.py              // 适用于linux下的音乐情感标注程序
+    - mid2wav.py            // 从midi音乐预处理成wav音乐的程序
+    - preprocess.py         // 数据预处理程序
+    - train.py              // 训练模型的程序
+- config.json               // 配置文件
+- Dockerfile                // 最简的midi音乐转wav音乐的Dockerfile
+- requirements.txt          // 项目python环境的依赖项
+```
+
+> 注：有些文件目录和文件会在中间情况下产生
