@@ -8,3 +8,4 @@ ckpt/
 *.sf2
 *.tar
 *.log
+*.pt
